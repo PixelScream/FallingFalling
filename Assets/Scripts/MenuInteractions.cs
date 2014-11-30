@@ -6,10 +6,12 @@ public class MenuInteractions : MonoBehaviour {
 	public GameObject sceneScore;
 	public GameObject dedCanvas;
 	public GameObject pauseCanvas;
+	public PlayerMovement playerMovement;
 	void Awake() {
 //		bg = GameObject.Find ("bg");
 //		dedCanvas = GameObject.Find ("DedCanvas");
 		//DedMenu ();
+		playerMovement = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ();
 	}
 
 	public void DedMenu() {
@@ -24,7 +26,9 @@ public class MenuInteractions : MonoBehaviour {
 		bg.SetActive (pauseCanvas.activeSelf);
 		if (pauseCanvas.activeSelf) {
 			Time.timeScale = 0;
+			//playerMovement.paused = true;
 		} else {
+			//playerMovement.paused = false;
 			Time.timeScale = 1;
 		}
 	}

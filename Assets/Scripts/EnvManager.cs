@@ -26,7 +26,7 @@ public class EnvManager : MonoBehaviour {
 	}
 	
 	public void CameraCheck () {
-		if((cam.transform.position.y / aspectRatio.y) < -(rowsDown - 3)) {
+		while((cam.transform.position.y / aspectRatio.y) < -(rowsDown - 3)) {
 			BuildLayer(rowsDown);
 			rowsDown ++;
 		}
