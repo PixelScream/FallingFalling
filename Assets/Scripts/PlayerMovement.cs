@@ -75,7 +75,6 @@ public class PlayerMovement : MonoBehaviour {
 				dragging = true;
 			}
 			if (Input.GetMouseButtonUp(0)) {
-				envManager.CameraCheck();
 				dragEnd = Input.mousePosition;
 				//Debug.Log("Drag end : " + dragEnd);
 				dragging = false;
@@ -83,31 +82,21 @@ public class PlayerMovement : MonoBehaviour {
 				Debug.Log(dir);
 
 				if(dir != -1) {
-					GameObject neighbor = CheckForNeighbor(directions[dir], 1);
-
-					if (neighbor != null) {
-						int i = 1;
-						Debug.Log(neighbor);
-
-						// set off some chain reaction of checks in the blocks
-						bool knockKnock = true;
-
-						GameObject tempNeighbor = CheckForNeighbor(directions[dir], i);
-
-						while(tempNeighbor != null && (tempNeighbor.name.Split('_'))[0] == (neighbor.name.Split('_'))[0] ) {
-							neighbor = tempNeighbor;
-							tempNeighbor = CheckForNeighbor(directions[dir], i);
-							i++;
-						}
-						destination = neighbor.transform.position;
-					}
-
-					//MoveChar(dir);
-					//BlockBreak(dir);
+					MoveChar(dir);
 				}
+
 			}
 			transform.position = Vector2.Lerp(transform.position, destination, speed * Time.deltaTime );
 
+			if(Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) {
+				MoveChar(1);
+			}
+			if(Input.GetKeyDown(KeyCode.S) || Input.GetKeyDown(KeyCode.DownArrow)) {
+				MoveChar(2);
+			}
+			if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) {
+				MoveChar(3);
+			}
 		}
 	}
 
@@ -147,28 +136,43 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	private void MoveChar(int dir) {
-		switch(dir)
-		{
-		case 0:
-			rigidbody2D.velocity += new Vector2 (0, slideSpeed);
-			anim.SetTrigger("BoingUp");
-			break;
-		case 1:
-			anim.SetTrigger("Boing");
-			rigidbody2D.velocity += new Vector2 (slideSpeed, 0);
-			break;
-		case 2:
-			anim.SetTrigger("Boing");
-			rigidbody2D.velocity += new Vector2 (0, -(slideSpeed));
-			break;
-		case 3:
-			anim.SetTrigger("Boing");
-			rigidbody2D.velocity += new Vector2 (-(slideSpeed), 0);
-			break;
+		GameObject neighbor = CheckForNeighbor(directions[dir], 1);
+		
+		if (neighbor != null) {
+			int i = 1;
+			Debug.Log(neighbor);
+			
+			// set off some chain reaction of checks in the blocks
+			bool knockKnock = true;
+			
+			GameObject tempNeighbor = CheckForNeighbor(directions[dir], i);
+			
+			while(knockKnock) {
+				if(tempNeighbor != null) {
+					if ((tempNeighbor.name.Split('_'))[0] == (neighbor.name.Split('_'))[0] ) {
+						neighbor = tempNeighbor;
+						tempNeighbor = CheckForNeighbor(directions[dir], i);
+						i++;
+					} else if ((tempNeighbor.name.Split('('))[0] == "Enemy") { 
+						neighbor = tempNeighbor;
+						tempNeighbor = CheckForNeighbor(directions[dir], i);
+						i++;
+						knockKnock = false;
+					} else {
+						knockKnock = false;
+					}
+				} else {
+					knockKnock = false;
+				}
+			}			
+			destination = neighbor.transform.position;
 		}
-		envManager.CameraCheck ();
+		
+		//MoveChar(dir);
+		//BlockBreak(dir);
+		envManager.CameraCheck();
 	}
-
+	
 	public GameObject CheckForNeighbor(Vector2 dir, int mul) {
 		Vector3 d = destination + new Vector2(dir.x * aspectRatio.x * mul, dir.y * aspectRatio.y * mul);
 		Collider2D  col = Physics2D.OverlapCircle (d, 1.3f, whatIsGround);
