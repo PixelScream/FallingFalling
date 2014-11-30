@@ -1,11 +1,10 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\EnvManager.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\PlayerMovement.cs">
     <Files>
-      <File FileName="Assets\Scripts\PlayerMovement.cs" Line="107" Column="1" />
-      <File FileName="Assets\Scripts\EnvManager.cs" Line="29" Column="8" />
-      <File FileName="Assets\Scripts\CameraController.cs" Line="1" Column="1" />
-      <File FileName="Assets\Scripts\MenuInteractions.cs" Line="31" Column="6" />
+      <File FileName="Assets\Scripts\Score.cs" Line="14" Column="3" />
+      <File FileName="Assets\Scripts\HighestScore.cs" Line="2" Column="18" />
+      <File FileName="Assets\Scripts\PlayerMovement.cs" Line="222" Column="29" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

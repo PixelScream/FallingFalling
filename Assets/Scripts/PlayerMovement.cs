@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 using System.Collections.Generic;
 
 public class PlayerMovement : MonoBehaviour {
@@ -30,8 +31,13 @@ public class PlayerMovement : MonoBehaviour {
 	public float lineMagnitued = 2;
 	private Vector2 aspectRatio = new Vector2 (3, 5);
 
-	private bool ded = false;
+	public bool ded = false;
 	public bool paused = false;
+	public bool canMove = true;
+	public float closeEnough = 2;
+	public float distanceBetweenDestination;
+	public GameObject highScore;
+	public Text text;
 
 	void Start () {
 		destination = transform.position;
@@ -48,12 +54,14 @@ public class PlayerMovement : MonoBehaviour {
 		if (anim == null) {	anim = sprite.GetComponent<Animator> (); }
 		if (sceneManager == null) { sceneManager = GameObject.FindGameObjectWithTag("Scene_Manager"); }
 		menuInteractions = sceneManager.GetComponent<MenuInteractions>();
+		text = highScore.GetComponent<Text>();
+		text.text = "highest " + PlayerPrefs.GetInt ("High Score").ToString ();
 	}
 	
 	void Update () {
 		if(ded) { return; }
 		// Limit player movement to the width of the grid
-		if (!paused) {
+		if (!paused && canMove) {
 
 			if (transform.position.x > 18 ) {
 				rigidbody2D.velocity = new Vector2( 0, rigidbody2D.velocity.y);
@@ -86,8 +94,10 @@ public class PlayerMovement : MonoBehaviour {
 				}
 
 			}
-			transform.position = Vector2.Lerp(transform.position, destination, speed * Time.deltaTime );
 
+			if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
+				MoveChar(0);
+			}
 			if(Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) {
 				MoveChar(1);
 			}
@@ -96,6 +106,12 @@ public class PlayerMovement : MonoBehaviour {
 			}
 			if(Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) {
 				MoveChar(3);
+			}
+		}
+		transform.position = Vector2.Lerp(transform.position, destination, (speed - (distanceBetweenDestination / 6 )) * Time.deltaTime );
+		if(!canMove) {
+			if((Vector2.Distance(transform.position, destination) < closeEnough)) {
+				canMove = true;
 			}
 		}
 	}
@@ -139,6 +155,11 @@ public class PlayerMovement : MonoBehaviour {
 		GameObject neighbor = CheckForNeighbor(directions[dir], 1);
 		
 		if (neighbor != null) {
+			if (dir == 0) {
+				anim.SetTrigger("BoingUp");
+			} else {
+				anim.SetTrigger("Boing");
+			}
 			int i = 1;
 			Debug.Log(neighbor);
 			
@@ -166,11 +187,13 @@ public class PlayerMovement : MonoBehaviour {
 				}
 			}			
 			destination = neighbor.transform.position;
+			distanceBetweenDestination = (Vector2.Distance(transform.position, destination));
 		}
 		
 		//MoveChar(dir);
 		//BlockBreak(dir);
 		envManager.CameraCheck();
+		canMove = false;
 	}
 	
 	public GameObject CheckForNeighbor(Vector2 dir, int mul) {
@@ -193,6 +216,13 @@ public class PlayerMovement : MonoBehaviour {
 	{
 		//Debug.Log ("ay " + other.tag);
 		if(other.tag == "Enemy") {
+			int curScore = (int) Mathf.Round(Mathf.Abs( transform.position.y));
+			if (PlayerPrefs.GetInt("High Score") == null || PlayerPrefs.GetInt("High Score") < curScore) {
+				PlayerPrefs.SetInt("High Score", curScore);
+				Debug.Log("new highscore is " + PlayerPrefs.GetInt("High Score"));
+				//highScore.GetComponent<HighestScore>().ChangeScore(curScore);
+				text.text = "highest " + curScore.ToString ();
+			}
 			Debug.Log("he ded");
 			menuInteractions.DedMenu ();
 			ded = true;
