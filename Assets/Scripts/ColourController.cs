@@ -44,7 +44,7 @@ public class ColourController : MonoBehaviour {
 		}
 		Color envColor = FromAhsb (1, envHue, envSat, envValue);	
 		for(int i = 0; i < envSprites.Length; i++ ) {
-			envSprites[i].color = envColor;
+			envSprites[i].sharedMaterial.color = envColor;
 		}
 
 		// white tiles
@@ -56,7 +56,7 @@ public class ColourController : MonoBehaviour {
 		}
 		envColor = FromAhsb (1, envHue, envSat, envValue);	
 		for(int i = 0; i < envSprites.Length; i++ ) {
-			envSprites[i].color = envColor;
+			envSprites[i].sharedMaterial.color = envColor;
 		}
 
 		// enemy
@@ -67,7 +67,7 @@ public class ColourController : MonoBehaviour {
 		}
 		envColor = FromAhsb (1, envHue, sat, value);	
 		for(int i = 0; i < envSprites.Length; i++ ) {
-			envSprites[i].color = envColor;
+			envSprites[i].sharedMaterial.color = envColor;
 		}
 	}
 

@@ -39,6 +39,8 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject highScore;
 	public Text text;
 
+	public GameObject cross;
+	public float crossDistance = 2;
 	void Start () {
 		destination = transform.position;
 		// add the 4 directions
@@ -92,7 +94,7 @@ public class PlayerMovement : MonoBehaviour {
 				if(dir != -1) {
 					MoveChar(dir);
 				}
-
+				cross.transform.position = transform.position;
 			}
 
 			if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
@@ -113,6 +115,29 @@ public class PlayerMovement : MonoBehaviour {
 			if((Vector2.Distance(transform.position, destination) < closeEnough)) {
 				canMove = true;
 			}
+		}
+
+		if(dragging) {
+			int dir = GetDirectionDrag(dragStart, Input.mousePosition);
+			Vector3 crossPos;
+			switch(dir){ 
+			case 0:
+				crossPos = transform.position +(new Vector3 (0, 1, 0) * crossDistance * aspectRatio.y);
+				break;
+			case 1:
+				crossPos = transform.position + (new Vector3 (1, 0, 0) * crossDistance * aspectRatio.x);
+				break;
+			case 2:
+				crossPos = transform.position + (new Vector3 (0, -1, 0) * crossDistance * aspectRatio.y);
+				break;
+			case 3:
+				crossPos = transform.position + (new Vector3 (-1, 0, 0) * crossDistance * aspectRatio.x);
+				break;
+			default:
+				crossPos = transform.position;
+				break;
+			}
+			cross.transform.position = Vector3.Lerp(cross.transform.position, crossPos, 0.6f);
 		}
 	}
 
