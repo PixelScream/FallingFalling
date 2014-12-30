@@ -78,6 +78,11 @@ public class PlayerMovement : MonoBehaviour {
 				Application.LoadLevel(Application.loadedLevel);
 			}
 
+			if(Input.GetKeyDown(KeyCode.W)) {
+				PlayerPrefs.DeleteKey("hue");
+				Debug.Log("hue deleted , " + PlayerPrefs.GetFloat ("hue"));
+			}
+
 			// Mouse/ drag controlls
 			if (Input.GetMouseButtonDown(0)) {
 				dragStart = Input.mousePosition;

@@ -19,6 +19,9 @@ public class ColourController : MonoBehaviour {
 
 	void Start () {
 		sprites = tiles [0].transform.GetComponentsInChildren<SpriteRenderer> ();
+		Debug.Log ("Stored hue is : " + PlayerPrefs.GetFloat ("hue"));
+		if(PlayerPrefs.GetFloat("hue") != 0)
+			hue = PlayerPrefs.GetFloat("hue");
 		hueSlider.value = hue / 360;
 	}
 
@@ -28,6 +31,7 @@ public class ColourController : MonoBehaviour {
 
 	public void ChangeColour () {
 		Debug.Log ("changed");
+		PlayerPrefs.SetFloat("hue", hueSlider.value * 360);
 		hue = hueSlider.value * 360;
 		heroColor = FromAhsb (1, hue, sat, value);
 
@@ -44,7 +48,7 @@ public class ColourController : MonoBehaviour {
 		}
 		Color envColor = FromAhsb (1, envHue, envSat, envValue);	
 		for(int i = 0; i < envSprites.Length; i++ ) {
-			envSprites[i].sharedMaterial.color = envColor;
+			envSprites[i].color = envColor;
 		}
 
 		// white tiles
@@ -56,7 +60,7 @@ public class ColourController : MonoBehaviour {
 		}
 		envColor = FromAhsb (1, envHue, envSat, envValue);	
 		for(int i = 0; i < envSprites.Length; i++ ) {
-			envSprites[i].sharedMaterial.color = envColor;
+			envSprites[i].color = envColor;
 		}
 
 		// enemy
@@ -67,7 +71,7 @@ public class ColourController : MonoBehaviour {
 		}
 		envColor = FromAhsb (1, envHue, sat, value);	
 		for(int i = 0; i < envSprites.Length; i++ ) {
-			envSprites[i].sharedMaterial.color = envColor;
+			envSprites[i].color = envColor;
 		}
 	}
 
