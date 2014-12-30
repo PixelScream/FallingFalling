@@ -15,7 +15,7 @@ public class BlockController : MonoBehaviour {
 	void Start() {
 		dimensions = transform.GetComponent<BoxCollider2D> ().size;
 		quaters = transform.GetComponentsInChildren<SpriteRenderer> ();
-		CheckSides();
+		Invoke("CheckSides", 0.1f);
 	}
 	
 	public void BreakBlock() {
@@ -24,28 +24,30 @@ public class BlockController : MonoBehaviour {
 	}
 
 	public void CheckSides() {
-		neighbors = new bool[4] {CheckForNeighbor(new Vector3(0,1 * dimensions.y,0)), 
-			CheckForNeighbor(new Vector3(1 * dimensions.y,0,0)), 
-			CheckForNeighbor(new Vector3(0,-1 * dimensions.y,0)), 
-			CheckForNeighbor(new Vector3(-1 * dimensions.y,0,0))};
+		neighbors = new bool[4] {CheckForNeighbor(new Vector3(0, 1 * dimensions.y, 0)), 
+			CheckForNeighbor(new Vector3(1 * dimensions.x, 0, 0)), 
+			CheckForNeighbor(new Vector3(0, -(1 * dimensions.y), 0)), 
+			CheckForNeighbor(new Vector3(-(1 * dimensions.x), 0, 0))};
 		int[] quaterState = new int[4]{0,0,0,0};
 		if(neighbors[0]) {
-			quaterState[0] ++;
-			quaterState[1] ++;
+			quaterState[0] = 1;
+			quaterState[1] = 1;
 		}
 		if(neighbors[1]) {
-			quaterState[1] ++;
-			quaterState[2] ++;
+			quaterState[1] += 2;
+			quaterState[2] += 2;
 		}
 		if(neighbors[2]) {
-			quaterState[2] ++;
-			quaterState[3] ++;
+			if (quaterState[2] != 1) {
+				quaterState[2] ++;
+				quaterState[3] ++;
+			}
 		}
 		if(neighbors[3]) {
-			quaterState[3] ++;
-			quaterState[0] ++;
+			quaterState[3] += 2;
+			quaterState[0] += 2;
 		}
-		for(int i = 0; i < quaterState.Length; i++) {
+		for(int i = 0; i < quaters.Length; i++) {
 			switch(quaterState[i]) {
 			case 0: 
 				quaters[i].sprite = alone[i];
@@ -56,7 +58,7 @@ public class BlockController : MonoBehaviour {
 			case 2: 
 				quaters[i].sprite = hor[i];
 				break;
-			case 3: 
+			default: 
 				quaters[i].sprite = full[i];
 				break;
 			}
@@ -67,10 +69,12 @@ public class BlockController : MonoBehaviour {
 		Vector3 d = transform.position + dir;
 		Collider2D  col = Physics2D.OverlapCircle (d, 0.3f, env);
 		if(col != null) {
-			Debug.Log("true");
-			return true;
+			//Debug.Log("true");
+			if((col.transform.name.Split('_'))[0] == (transform.name.Split('_'))[0] ) {
+				return true;
+			}
 		}
-		Debug.Log("false");
+		//Debug.Log("false");
 		return false;
 	}
 }
