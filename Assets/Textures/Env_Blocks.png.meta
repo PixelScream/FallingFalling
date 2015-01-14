@@ -1,11 +1,28 @@
 fileFormatVersion: 2
 guid: 7ddd4629fb1f1c14f80de85c1105ecce
 TextureImporter:
-  fileIDToRecycleName: {}
+  fileIDToRecycleName:
+    21300000: Env_Blocks_Alone_0
+    21300002: Env_Blocks_Alone_1
+    21300004: Env_Blocks_Vertical_0
+    21300006: Env_Blocks_Vertical_1
+    21300008: Env_Blocks_Alone_3
+    21300010: Env_Blocks_Alone_2
+    21300012: Env_Blocks_Vertical_3
+    21300014: Env_Blocks_Vertical_2
+    21300016: Env_Blocks_Hor_0
+    21300018: Env_Blocks_Hor_1
+    21300020: Env_Blocks_Full_0
+    21300022: Env_Blocks_Full_1
+    21300024: Env_Blocks_Hor_3
+    21300026: Env_Blocks_Hor_2
+    21300028: Env_Blocks_Full_3
+    21300030: Env_Blocks_Full_2
+    21300032: Env_Blocks_Full
   serializedVersion: 2
   mipmaps:
     mipMapMode: 0
-    enableMipMap: 1
+    enableMipMap: 0
     linearTexture: 0
     correctGamma: 0
     fadeOut: 0
@@ -27,7 +44,7 @@ TextureImporter:
     filterMode: -1
     aniso: 16
     mipBias: -1
-    wrapMode: -1
+    wrapMode: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -37,11 +54,181 @@ TextureImporter:
   alignment: 0
   spritePivot: {x: .5, y: .5}
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
-  spritePixelsToUnits: 100
+  spritePixelsToUnits: 50
   alphaIsTransparency: 1
   textureType: 8
   buildTargetSettings: []
   spriteSheet:
-    sprites: []
-  spritePackingTag: 
+    sprites:
+    - name: Env_Blocks_Alone_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 345
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Alone_1
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 345
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Vertical_0
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 345
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Vertical_1
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 345
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Alone_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 230
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Alone_2
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 230
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Vertical_3
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 230
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Vertical_2
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 230
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Hor_0
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 115
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Hor_1
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 115
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Full_0
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 115
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Full_1
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 115
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Hor_3
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Hor_2
+      rect:
+        serializedVersion: 2
+        x: 73
+        y: 0
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Full_3
+      rect:
+        serializedVersion: 2
+        x: 146
+        y: 0
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Full_2
+      rect:
+        serializedVersion: 2
+        x: 219
+        y: 0
+        width: 73
+        height: 115
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+    - name: Env_Blocks_Full
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 230
+        width: 146
+        height: 230
+      alignment: 0
+      pivot: {x: .5, y: .5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+  spritePackingTag: EnvBlocks
   userData: 

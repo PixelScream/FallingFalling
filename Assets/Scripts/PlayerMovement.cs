@@ -39,6 +39,17 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject highScore;
 	public Text text;
 
+	public GameObject cross;
+	public float crossDistance = 2;
+
+	public int pickedup;
+	public Text pickupText;
+
+	public float maxTime = 30;
+	public float time;
+	public Slider timeSlide;
+	public float pickupTime = 5;
+
 	void Start () {
 		destination = transform.position;
 		// add the 4 directions
@@ -56,6 +67,8 @@ public class PlayerMovement : MonoBehaviour {
 		menuInteractions = sceneManager.GetComponent<MenuInteractions>();
 		text = highScore.GetComponent<Text>();
 		text.text = "highest " + PlayerPrefs.GetInt ("High Score").ToString ();
+		time = maxTime + Time.time;
+		timeSlide.maxValue = maxTime;
 	}
 	
 	void Update () {
@@ -76,6 +89,11 @@ public class PlayerMovement : MonoBehaviour {
 				Application.LoadLevel(Application.loadedLevel);
 			}
 
+			if(Input.GetKeyDown(KeyCode.T)) {
+				PlayerPrefs.DeleteKey("hue");
+				Debug.Log("hue deleted , " + PlayerPrefs.GetFloat ("hue"));
+			}
+
 			// Mouse/ drag controlls
 			if (Input.GetMouseButtonDown(0)) {
 				dragStart = Input.mousePosition;
@@ -92,7 +110,7 @@ public class PlayerMovement : MonoBehaviour {
 				if(dir != -1) {
 					MoveChar(dir);
 				}
-
+				cross.transform.position = transform.position;
 			}
 
 			if(Input.GetKeyDown(KeyCode.W) || Input.GetKeyDown(KeyCode.UpArrow)) {
@@ -112,8 +130,42 @@ public class PlayerMovement : MonoBehaviour {
 		if(!canMove) {
 			if((Vector2.Distance(transform.position, destination) < closeEnough)) {
 				canMove = true;
+				if(!IsGrounded()) {
+					Debug.Log("about to fall");
+					Fall();
+				}
 			}
 		}
+
+		if(dragging) {
+			int dir = GetDirectionDrag(dragStart, Input.mousePosition);
+			Vector3 crossPos;
+			switch(dir){ 
+			case 0:
+				crossPos = transform.position +(new Vector3 (0, 1, 0) * crossDistance * aspectRatio.y);
+				break;
+			case 1:
+				crossPos = transform.position + (new Vector3 (1, 0, 0) * crossDistance * aspectRatio.x);
+				break;
+			case 2:
+				crossPos = transform.position + (new Vector3 (0, -1, 0) * crossDistance * aspectRatio.y);
+				break;
+			case 3:
+				crossPos = transform.position + (new Vector3 (-1, 0, 0) * crossDistance * aspectRatio.x);
+				break;
+			default:
+				crossPos = transform.position;
+				break;
+			}
+			cross.transform.position = Vector3.Lerp(cross.transform.position, crossPos, 0.6f);
+		}
+
+		// time shtuff
+
+		if (Time.time > time)
+			PlayerDead ();
+
+		timeSlide.value = time - Time.time;
 	}
 
 	// function which compares the dragging start location and the end pos to get the direction of the drag
@@ -174,7 +226,7 @@ public class PlayerMovement : MonoBehaviour {
 						neighbor = tempNeighbor;
 						tempNeighbor = CheckForNeighbor(directions[dir], i);
 						i++;
-					} else if ((tempNeighbor.name.Split('('))[0] == "Enemy") { 
+					} else if ((tempNeighbor.name.Split('('))[0] == "Enemy" || tempNeighbor.tag == "Pickup") { 
 						neighbor = tempNeighbor;
 						tempNeighbor = CheckForNeighbor(directions[dir], i);
 						i++;
@@ -188,6 +240,7 @@ public class PlayerMovement : MonoBehaviour {
 			}			
 			destination = neighbor.transform.position;
 			distanceBetweenDestination = (Vector2.Distance(transform.position, destination));
+			//Destroy(neighbor);
 		}
 		
 		//MoveChar(dir);
@@ -195,10 +248,26 @@ public class PlayerMovement : MonoBehaviour {
 		envManager.CameraCheck();
 		canMove = false;
 	}
-	
+
+	public void Fall() {
+		bool groundFound = false;
+		int i = 0;
+
+		while (groundFound == false) {
+			GameObject neighbor = CheckForNeighbor(directions[2], i + 1);
+			if(neighbor != null && neighbor.tag != "Pickup") {
+				groundFound = true;
+			} else {
+				i++;
+			}
+		}
+
+		destination += new Vector2 (0, -(aspectRatio.y * i));
+	}
+
 	public GameObject CheckForNeighbor(Vector2 dir, int mul) {
 		Vector3 d = destination + new Vector2(dir.x * aspectRatio.x * mul, dir.y * aspectRatio.y * mul);
-		Collider2D  col = Physics2D.OverlapCircle (d, 1.3f, whatIsGround);
+		Collider2D  col = Physics2D.OverlapCircle (d, 0.3f, whatIsGround);
 		if(col != null) {
 			return col.gameObject;
 		}
@@ -207,7 +276,7 @@ public class PlayerMovement : MonoBehaviour {
 
 	//checks below character to see if he's standing on anything
 	public bool IsGrounded() {
-		return  Physics2D.OverlapCircle (groundCheck.position, 1.3f, whatIsGround);
+		return  Physics2D.OverlapCircle (groundCheck.position, 0.3f, whatIsGround);
 	}
 
 
@@ -216,17 +285,32 @@ public class PlayerMovement : MonoBehaviour {
 	{
 		//Debug.Log ("ay " + other.tag);
 		if(other.tag == "Enemy") {
-			int curScore = (int) Mathf.Round(Mathf.Abs( transform.position.y));
-			if (PlayerPrefs.GetInt("High Score") == null || PlayerPrefs.GetInt("High Score") < curScore) {
-				PlayerPrefs.SetInt("High Score", curScore);
-				Debug.Log("new highscore is " + PlayerPrefs.GetInt("High Score"));
-				//highScore.GetComponent<HighestScore>().ChangeScore(curScore);
-				text.text = "highest " + curScore.ToString ();
-			}
-			Debug.Log("he ded");
-			menuInteractions.DedMenu ();
-			ded = true;
+			PlayerDead();
 		}
+		else if(other.tag.Split('_')[0] == "Block") {
+			other.GetComponent<BlockController>().BreakBlock();
+		}
+		else if(other.tag == "Pickup") {
+			pickedup += 1;
+			pickupText.text = pickedup + "x";
+			Destroy(other.gameObject);
+			time += pickupTime;
+			if (time > Time.time + maxTime)
+				time = Time.time + maxTime;
+		}
+	}
+
+	public void PlayerDead() {
+		int curScore = (int) Mathf.Round(Mathf.Abs( transform.position.y));
+		if (PlayerPrefs.GetInt("High Score") == null || PlayerPrefs.GetInt("High Score") < curScore) {
+			PlayerPrefs.SetInt("High Score", curScore);
+			Debug.Log("new highscore is " + PlayerPrefs.GetInt("High Score"));
+			//highScore.GetComponent<HighestScore>().ChangeScore(curScore);
+			text.text = "highest " + curScore.ToString ();
+		}
+		Debug.Log("he ded");
+		menuInteractions.DedMenu ();
+		ded = true;
 	}
 }
 

@@ -62,11 +62,11 @@ public class HUDFPS : MonoBehaviour
 		// Copy the default label skin, change the color and the alignement
 		if( style == null ){
 			style = new GUIStyle( GUI.skin.label );
-			style.normal.textColor = Color.white;
+			style.normal.textColor = new Color (1, 1, 1, 0.3f);
 			style.alignment = TextAnchor.MiddleCenter;
 		}
 		
-		GUI.color = updateColor ? color : Color.white;
+		GUI.color = updateColor ? color : new Color (1, 1, 1, 0.2f);
 		startRect = GUI.Window(0, startRect, DoMyWindow, "");
 	}
 	
