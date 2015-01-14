@@ -5,6 +5,8 @@ using System.Collections.Generic;
 public class EnvManager : MonoBehaviour {
 	public GameObject [] envBlocks;
 	public GameObject enemy;
+	public GameObject pickup;
+	public float pickupProbability = 0.01f;
 	public int spawnRate = 5;
 	public float probablity = 0.2f;
 	public float adjustedProbability;
@@ -31,7 +33,7 @@ public class EnvManager : MonoBehaviour {
 	}
 	
 	public void CameraCheck () {
-		adjustedProbability = probablity + Mathf.Abs (playerMovement.destination.y * 0.0001f);
+		adjustedProbability = probablity + Mathf.Abs (playerMovement.destination.y * 0.00001f);
 		if(adjustedProbability > maxProbability) { adjustedProbability = maxProbability; }
 
 		// build rows
@@ -55,7 +57,11 @@ public class EnvManager : MonoBehaviour {
 			GameObject sp;
 			if( Random.value < adjustedProbability ) {
 				sp = enemy;
-			} else {
+			}
+			else if(Random.value < pickupProbability) {
+				sp = pickup;
+			}
+			else {
 				int b = Random.Range (0, envBlocks.Length );
 				sp = envBlocks[b];
 			}

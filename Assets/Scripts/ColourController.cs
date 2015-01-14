@@ -20,8 +20,9 @@ public class ColourController : MonoBehaviour {
 	void Start () {
 		sprites = tiles [0].transform.GetComponentsInChildren<SpriteRenderer> ();
 		Debug.Log ("Stored hue is : " + PlayerPrefs.GetFloat ("hue"));
-		if(PlayerPrefs.GetFloat("hue") != 0)
-			hue = PlayerPrefs.GetFloat("hue");
+		//if(PlayerPrefs.GetFloat("hue") != 0) 
+		//	hue = PlayerPrefs.GetFloat("hue");
+		hue = UnityEngine.Random.value  * 360;
 		hueSlider.value = hue / 360;
 	}
 
@@ -78,7 +79,7 @@ public class ColourController : MonoBehaviour {
 	public static Color FromAhsb(int alpha, float hue, float saturation, float brightness)
 	{
 		float fMax, fMid, fMin;
-		int iSextant, iMax, iMid, iMin;
+		int iSextant;
 		
 		if (0.5 < brightness)
 		{
@@ -107,11 +108,6 @@ public class ColourController : MonoBehaviour {
 		{
 			fMid = fMin - (hue * (fMax - fMin));
 		}
-		/*
-		iMax = Convert.ToInt32(fMax * 255);
-		iMid = Convert.ToInt32(fMid * 255);
-		iMin = Convert.ToInt32(fMin * 255);
-		*/
 		
 		switch (iSextant)
 		{

@@ -46,8 +46,9 @@ Temporary Items
 # =============== #
 [Tt]emp/
 [Oo]bj/
-[Bb]uild
+[Bb]uilds/
 [Ll]ibrary/
 sysinfo.txt
 Assets/Standard Assets/
 Assets/Editor/Image Effects/
+Library/
