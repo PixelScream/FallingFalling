@@ -10,6 +10,9 @@ public class CameraController : MonoBehaviour {
 	void Start () {
 		initialX = transform.position.x;
 		if (player == null) { player = GameObject.FindGameObjectWithTag("Player"); }
+
+		// deadzone is multiplied but how tall a block is, i.e. the deadzone is x number of blocks off;
+		deadZone = GameObject.Find ("Game_Manager").GetComponent<GameManager> ().aspectRatio.y * deadZone;
 	}
 	
 	// Update is called once per frame

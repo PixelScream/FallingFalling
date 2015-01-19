@@ -70,7 +70,8 @@ public class BlockController : MonoBehaviour {
 		Collider2D  col = Physics2D.OverlapCircle (d, 0.3f, env);
 		if(col != null) {
 			//Debug.Log("true");
-			if((col.transform.name.Split('_'))[0] == (transform.name.Split('_'))[0] ) {
+			// if((col.transform.name.Split('_'))[0] == (transform.name.Split('_'))[0] ) {
+			if(col.transform.tag == transform.tag ) {
 				return true;
 			}
 		}

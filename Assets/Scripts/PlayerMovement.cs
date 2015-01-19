@@ -29,7 +29,7 @@ public class PlayerMovement : MonoBehaviour {
 	public GameObject sceneManager;
 	public MenuInteractions menuInteractions;
 	public float lineMagnitued = 2;
-	private Vector2 aspectRatio = new Vector2 (3, 5);
+	//private Vector2 aspectRatio = new Vector2 (3, 5);
 
 	public bool ded = false;
 	public bool paused = false;
@@ -37,6 +37,7 @@ public class PlayerMovement : MonoBehaviour {
 	public float closeEnough = 2;
 	public float distanceBetweenDestination;
 	public GameObject highScore;
+	public Text deadScore;
 	public Text text;
 
 	public GameObject cross;
@@ -50,7 +51,10 @@ public class PlayerMovement : MonoBehaviour {
 	public Slider timeSlide;
 	public float pickupTime = 5;
 
+	private GameManager gameManager;
+
 	void Start () {
+		gameManager = GameObject.Find ("Game_Manager").GetComponent<GameManager> ();
 		destination = transform.position;
 		// add the 4 directions
 		directions.Add (new Vector2 (0, 1));
@@ -72,7 +76,7 @@ public class PlayerMovement : MonoBehaviour {
 	}
 	
 	void Update () {
-		if(ded) { return; }
+		if(ded || paused) { return; }
 		// Limit player movement to the width of the grid
 		if (!paused && canMove) {
 
@@ -126,9 +130,11 @@ public class PlayerMovement : MonoBehaviour {
 				MoveChar(3);
 			}
 		}
-		transform.position = Vector2.Lerp(transform.position, destination, (speed - (distanceBetweenDestination / 6 )) * Time.deltaTime );
+		//transform.position = Vector2.Lerp(transform.position, destination, (speed - (distanceBetweenDestination / 6 )) * Time.deltaTime );
+		transform.position = Vector2.Lerp(transform.position, destination, speed * Time.deltaTime );
 		if(!canMove) {
 			if((Vector2.Distance(transform.position, destination) < closeEnough)) {
+				transform.position = destination;
 				canMove = true;
 				if(!IsGrounded()) {
 					Debug.Log("about to fall");
@@ -142,16 +148,16 @@ public class PlayerMovement : MonoBehaviour {
 			Vector3 crossPos;
 			switch(dir){ 
 			case 0:
-				crossPos = transform.position +(new Vector3 (0, 1, 0) * crossDistance * aspectRatio.y);
+				crossPos = transform.position +(new Vector3 (0, 1, 0) * crossDistance * gameManager.aspectRatio.y);
 				break;
 			case 1:
-				crossPos = transform.position + (new Vector3 (1, 0, 0) * crossDistance * aspectRatio.x);
+				crossPos = transform.position + (new Vector3 (1, 0, 0) * crossDistance * gameManager.aspectRatio.x);
 				break;
 			case 2:
-				crossPos = transform.position + (new Vector3 (0, -1, 0) * crossDistance * aspectRatio.y);
+				crossPos = transform.position + (new Vector3 (0, -1, 0) * crossDistance * gameManager.aspectRatio.y);
 				break;
 			case 3:
-				crossPos = transform.position + (new Vector3 (-1, 0, 0) * crossDistance * aspectRatio.x);
+				crossPos = transform.position + (new Vector3 (-1, 0, 0) * crossDistance * gameManager.aspectRatio.x);
 				break;
 			default:
 				crossPos = transform.position;
@@ -204,91 +210,102 @@ public class PlayerMovement : MonoBehaviour {
 	}
 
 	private void MoveChar(int dir) {
-		GameObject neighbor = CheckForNeighbor(directions[dir], 1);
-		
+
+		//origin = new Vector2((origin.x / aspectRatio.x) , Mathf.Abs( origin.y) / aspectRatio.y)  + (new Vector2( directions[dir].x, -(directions[dir].y)) * mul);
+		if( gameManager.OutOfBounds(destination ,dir, 1)){
+			return;
+		}
+
+		GameObject neighbor = gameManager.CheckForNeighbor(destination ,dir, 1);
+		int i = 1;
+		bool knockKnock = true;
 		if (neighbor != null) {
-			if (dir == 0) {
-				anim.SetTrigger("BoingUp");
-			} else {
-				anim.SetTrigger("Boing");
-			}
-			int i = 1;
-			Debug.Log(neighbor);
-			
-			// set off some chain reaction of checks in the blocks
-			bool knockKnock = true;
-			
-			GameObject tempNeighbor = CheckForNeighbor(directions[dir], i);
-			
+			string tag = neighbor.tag;
 			while(knockKnock) {
-				if(tempNeighbor != null) {
-					if ((tempNeighbor.name.Split('_'))[0] == (neighbor.name.Split('_'))[0] ) {
-						neighbor = tempNeighbor;
-						tempNeighbor = CheckForNeighbor(directions[dir], i);
-						i++;
-					} else if ((tempNeighbor.name.Split('('))[0] == "Enemy" || tempNeighbor.tag == "Pickup") { 
-						neighbor = tempNeighbor;
-						tempNeighbor = CheckForNeighbor(directions[dir], i);
-						i++;
-						knockKnock = false;
+				if( gameManager.OutOfBounds(destination ,dir, i + 1 )) {
+					knockKnock = false;
+				} else {
+					neighbor = gameManager.CheckForNeighbor(destination ,dir, i + 1);
+					if (neighbor != null) {
+						if(neighbor.tag == tag) {
+							i++;
+						} 
+						else if(neighbor.tag == "Enemy" || neighbor.tag == "Pickup") {
+							i++;
+							knockKnock = false;
+						}
+						else {
+							knockKnock = false;
+						}
 					} else {
 						knockKnock = false;
 					}
-				} else {
-					knockKnock = false;
 				}
-			}			
-			destination = neighbor.transform.position;
-			distanceBetweenDestination = (Vector2.Distance(transform.position, destination));
-			//Destroy(neighbor);
+			}
+		} else {
+			while(knockKnock) {
+				if( gameManager.OutOfBounds(destination ,dir, i + 1 )) {
+					knockKnock = false;
+				} else {
+					neighbor = gameManager.CheckForNeighbor(destination ,dir, i + 1);
+					if (neighbor == null) {
+						i++;
+					} else {
+						knockKnock = false;
+					}
+				}
+			}
 		}
-		
-		//MoveChar(dir);
-		//BlockBreak(dir);
+
+		destination = new Vector2 (destination.x + (gameManager.directions [dir].x * gameManager.aspectRatio.x * (i)),
+		                           destination.y + (gameManager.directions [dir].y * gameManager.aspectRatio.y * (i)));
+		distanceBetweenDestination = (Vector2.Distance(transform.position, destination));
+
+		if (dir == 0) {
+			anim.SetTrigger("BoingUp");
+		} else {
+			anim.SetTrigger("Boing");
+		}
+
 		envManager.CameraCheck();
 		canMove = false;
 	}
+
 
 	public void Fall() {
 		bool groundFound = false;
 		int i = 0;
 
 		while (groundFound == false) {
-			GameObject neighbor = CheckForNeighbor(directions[2], i + 1);
+			GameObject neighbor = gameManager.CheckForNeighbor(destination ,2, i + 1);
 			if(neighbor != null && neighbor.tag != "Pickup") {
 				groundFound = true;
 			} else {
 				i++;
 			}
 		}
-
-		destination += new Vector2 (0, -(aspectRatio.y * i));
+		canMove = false;
+		destination += new Vector2 (0, -(gameManager.aspectRatio.y * i));
 	}
 
-	public GameObject CheckForNeighbor(Vector2 dir, int mul) {
-		Vector3 d = destination + new Vector2(dir.x * aspectRatio.x * mul, dir.y * aspectRatio.y * mul);
-		Collider2D  col = Physics2D.OverlapCircle (d, 0.3f, whatIsGround);
-		if(col != null) {
-			return col.gameObject;
-		}
-		return null;
-	}
+
 
 	//checks below character to see if he's standing on anything
 	public bool IsGrounded() {
-		return  Physics2D.OverlapCircle (groundCheck.position, 0.3f, whatIsGround);
+		GameObject neighbor = gameManager.CheckForNeighbor(new Vector2( transform.position.x, transform.position.y) , 2, 1);
+		if(neighbor != null)
+			return true;
+		return false;
+		//return  Physics2D.OverlapCircle (groundCheck.position, 0.3f, whatIsGround);
 	}
 
 
 	// handels dieing
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		//Debug.Log ("ay " + other.tag);
+		Debug.Log ("ay " + other.tag);
 		if(other.tag == "Enemy") {
 			PlayerDead();
-		}
-		else if(other.tag.Split('_')[0] == "Block") {
-			other.GetComponent<BlockController>().BreakBlock();
 		}
 		else if(other.tag == "Pickup") {
 			pickedup += 1;
@@ -298,17 +315,22 @@ public class PlayerMovement : MonoBehaviour {
 			if (time > Time.time + maxTime)
 				time = Time.time + maxTime;
 		}
+		else if(other.tag.Split('_')[1] == "Block") {
+			other.GetComponent<BlockController>().BreakBlock();
+			Debug.Log("Breaking block");
+		}
 	}
 
 	public void PlayerDead() {
-		int curScore = (int) Mathf.Round(Mathf.Abs( transform.position.y));
+		int curScore = (int) Mathf.Round(Mathf.Abs( transform.position.y)) * pickedup; 
 		if (PlayerPrefs.GetInt("High Score") == null || PlayerPrefs.GetInt("High Score") < curScore) {
 			PlayerPrefs.SetInt("High Score", curScore);
 			Debug.Log("new highscore is " + PlayerPrefs.GetInt("High Score"));
 			//highScore.GetComponent<HighestScore>().ChangeScore(curScore);
 			text.text = "highest " + curScore.ToString ();
 		}
-		Debug.Log("he ded");
+		Debug.Log("he ded , " + curScore);
+		deadScore.text = curScore.ToString();
 		menuInteractions.DedMenu ();
 		ded = true;
 	}

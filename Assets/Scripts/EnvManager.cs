@@ -11,8 +11,6 @@ public class EnvManager : MonoBehaviour {
 	public float probablity = 0.2f;
 	public float adjustedProbability;
 	public float maxProbability = 0.6f;
-	public Vector2 aspectRatio = new Vector2 (3, 5);
-	public int blocksAcross = 7;
 	public int rowsDown = 7;
 	private float startY;
 	public int scrollBuffer = 5;
@@ -20,10 +18,13 @@ public class EnvManager : MonoBehaviour {
 	public int burnLayer = 0;
 	public PlayerMovement playerMovement;
 
+	private GameManager gameManager;
+
 	void Awake () {
 		playerMovement = GameObject.FindGameObjectWithTag ("Player").GetComponent<PlayerMovement> ();
 		startY = transform.position.y;
 		if(cam == null) { cam = Camera.main.gameObject; }
+		gameManager = GameObject.Find ("Game_Manager").GetComponent<GameManager> ();
 	}
 
 	void Start () {
@@ -37,23 +38,23 @@ public class EnvManager : MonoBehaviour {
 		if(adjustedProbability > maxProbability) { adjustedProbability = maxProbability; }
 
 		// build rows
-		while((playerMovement.destination.y / aspectRatio.y) < -(rowsDown - scrollBuffer)) {
+		while((playerMovement.destination.y / gameManager.aspectRatio.y) < -(rowsDown - scrollBuffer)) {
 			BuildLayer(rowsDown);
 			rowsDown ++;
 		}
 		// destroy them
-		Debug.Log (((cam.transform.position.y + startY) / aspectRatio.y) + 6);
-		while ( ((cam.transform.position.y + startY) / aspectRatio.y) + 6 < -burnLayer) {
+		Debug.Log (((cam.transform.position.y + startY) / gameManager.aspectRatio.y) + 6);
+		while ( ((cam.transform.position.y + startY) / gameManager.aspectRatio.y) + 6 < -burnLayer) {
 			Destroy(GameObject.Find("Row_" + burnLayer));
 			burnLayer++;
 		}
 	}
 	private void BuildLayer(int row) {
-		GameObject rowHolder = new GameObject("Row_" + row);
-		float rowOffset = startY - (row * aspectRatio.y);
+		GameObject rowHolder = new GameObject((row + 1) + "_Row" );
+		float rowOffset = startY - (row * gameManager.aspectRatio.y);
 		rowHolder.transform.position = new Vector3(0, rowOffset, 0);
 		rowHolder.transform.parent = transform;
-		for(int i = 0; i < blocksAcross; i++) {
+		for(int i = 0; i < gameManager.blocksAcross; i++) {
 			GameObject sp;
 			if( Random.value < adjustedProbability ) {
 				sp = enemy;
@@ -65,9 +66,11 @@ public class EnvManager : MonoBehaviour {
 				int b = Random.Range (0, envBlocks.Length );
 				sp = envBlocks[b];
 			}
-			GameObject go = (GameObject) GameObject.Instantiate (sp, new Vector3((i * aspectRatio.x), rowOffset, 0), Quaternion.identity);
+			GameObject go = (GameObject) GameObject.Instantiate (sp, new Vector3((i * gameManager.aspectRatio.x), rowOffset, 0), Quaternion.identity);
 			//go.name = go.name + i;
 			go.transform.parent = rowHolder.transform;
+			go.name = (row + 1) + "_" + i;
+			//go.name = row + "_" + i + "_" + sp.name;
 		}
 	}
 }
